@@ -162,7 +162,7 @@ describe('preenche os campos obrigatórios e envia o formulário', function(){
         it('envia o formuário com sucesso usando um comando customizado', function(){
             cy.fillMandatoryFieldsAndSubmit() // este é um comando customizado e ele não existe, nós é que vamos criar ele para poder usar aqui. Então dentro da pasta support vamos criar no arquivo commands.js
             //Podemos passar também argumentos como exemplo cy.fillMandatoryFieldsAndSubmit(nome, sobreNome) e lá no nosso argumento personalizado receber
-
+            cy.contains('button', 'Enviar').click()
             cy.get('.success').should('be.visible') //Agora fazemos a verificações lá no comando customizado e aqui apenas testamos
         })
 
@@ -359,8 +359,8 @@ describe('preenche os campos obrigatórios e envia o formulário', function(){
             Basta parar o terminal e rodar npm run test:mobile
 
             Ele vai criar uma pasta de videos para armazenar um video do teste passando e no caso de falhar ele cria uma pasta de screenhots com uma imagem da falha. Tudo isso pensado para informar sucesso ou erro na execução do teste.
-        */
         
+        Exemplo funcionando.
        it('Cypress Runner simulando um dispositivo com 410 pixels de largura e 860 pixels de altura', function(){
         cy.fixture('example.json').as('sampleFile') //fizemos a fixture e damos um alias para ela "AS"
         cy.get('#file-upload') //Pegando o input
@@ -371,6 +371,7 @@ describe('preenche os campos obrigatórios e envia o formulário', function(){
                 expect($input[0].files[0].name).to.equal('example.json') //Verificando se o nome do arquivo é example.json.
             })
        })
+       */
 })
 
 
