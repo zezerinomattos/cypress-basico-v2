@@ -372,6 +372,21 @@ describe('preenche os campos obrigatórios e envia o formulário', function(){
             })
        })
        */
+
+       //Vamos Controle o "relógio" 🕐 do navegador com os comandos cy.clock() e cy.tick()
+       //Com a funcinalidade cy.clock(), você pode "congelar" 🧊 o relógio do navegador.
+       //E com a funcionalidade cy.tick(), você pode avançar no tempo. 🕒
+
+       it('verificam mensagens (de sucesso e erro) mensagem aparece, mas também que desaparece após 3 segundos', ()=> {
+            cy.clock() //Estou congelando o relógio do navegador
+            cy.fillMandatoryFieldsAndSubmit()
+            cy.contains('button', 'Enviar').click()
+            cy.get('.success').should('be.visible')  //Estou verificando se a mensagem aparece na tela
+            cy.tick(3000) //Estou adiantando o relogio do navegador em 3 segundos, que era o tempo que a menssagem aparecia na tela
+            cy.get('.success').should('not.be.visible') //Estou verificando se ela já não está mais na tela depois dos 3 segundos.
+
+            //Aqui estou mudando um pouco a estrutura do it coloquei um função anonima diferente "() =>", apenas mostrando que também podemos fazer assim.
+
+            //Como congelamos o relogio do navegador e depois pulamos para 3 segundos depois, nós não precisamos ficar aguardando 3 segundos para que a mensagem suma, no fim ganhamos tempo no nosso teste pois ele durou apenas 1 segundo e meio.
+       })
 })
-
-
