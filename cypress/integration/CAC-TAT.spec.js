@@ -377,7 +377,7 @@ describe('preenche os campos obrigatórios e envia o formulário', function(){
        //Com a funcinalidade cy.clock(), você pode "congelar" 🧊 o relógio do navegador.
        //E com a funcionalidade cy.tick(), você pode avançar no tempo. 🕒
 
-       it('verificam mensagens (de sucesso e erro) mensagem aparece, mas também que desaparece após 3 segundos', ()=> {
+        it('verificam mensagens (de sucesso e erro) mensagem aparece, mas também que desaparece após 3 segundos', ()=> {
             cy.clock() //Estou congelando o relógio do navegador
             cy.fillMandatoryFieldsAndSubmit()
             cy.contains('button', 'Enviar').click()
@@ -388,5 +388,107 @@ describe('preenche os campos obrigatórios e envia o formulário', function(){
             //Aqui estou mudando um pouco a estrutura do it coloquei um função anonima diferente "() =>", apenas mostrando que também podemos fazer assim.
 
             //Como congelamos o relogio do navegador e depois pulamos para 3 segundos depois, nós não precisamos ficar aguardando 3 segundos para que a mensagem suma, no fim ganhamos tempo no nosso teste pois ele durou apenas 1 segundo e meio.
-       })
+        })
+
+       /*
+            VAMOS USAR A BIBLIOTECA lodash (Cypress._) 
+            👨‍🏫 A funcionalidade _.times() serve para você executar uma função de callback um certo número de vezes, onde o número de vezes é o primeiro argumento, e a função de callback é o segundo.
+
+            VAMOS EXECUTAR UM TESTE 5 VEZES PARA VER QUE ELE É ESTAVEL
+       */
+        Cypress._.times(5, ()=> {
+            it('verificam mensagens (de sucesso e erro) mensagem aparece, mas também que desaparece após 3 segundos', ()=> {
+                cy.clock() //Estou congelando o relógio do navegador
+                cy.fillMandatoryFieldsAndSubmit()
+                cy.contains('button', 'Enviar').click()
+                cy.get('.success').should('be.visible')  //Estou verificando se a mensagem aparece na tela
+                cy.tick(3000) //Estou adiantando o relogio do navegador em 3 segundos, que era o tempo que a menssagem aparecia na tela
+                cy.get('.success').should('not.be.visible')
+            
+            })
+        })
+
+        /*
+            👨‍🏫 A funcionalidade _.repeat() serve para repetir uma string um certo número de vezes, onde o primeiro argumento é a string a qual deseja-se repetir, e o segundo argumento quantas vezes tal string deve ser repetida.
+
+            VAMOS FAZER COM UM TEXTO OU STRING SE REPITA QUANTAS VEZES QUISERMOS, NO NOSSO CASO VAMOS REPETIR 3 VEZES
+        */
+        it('Preenchendo os campos e usando um CTRL + V para o Textarea', function(){
+            const longText = Cypress._.repeat('teste', 10) // Nosso CTRL + V, esse comando vai fazer com teste se repita 10 x
+
+            cy.get('#firstName').type('Zezerino')
+            cy.get('#lastName').type('Mattos')
+            cy.get('#email').type('mattos@teste.com')
+            cy.get('#email-checkbox').click()
+            cy.get('#open-text-area')
+                //.type(longText) Qualquer um dos dois vai usar a variavel
+                .invoke('val', longText)
+                .should('have.value', longText)
+        })
+
+        /*
+            Invoque atributos e métodos de elementos com o comando .invoke()
+            Vimos o invoke na aula Lidando com links que abrem em outra aba, para remover o atributo target de um elemento, evitando que quando clicado, a página não abra em outra aba.
+
+            Além disso, no conteúdo Como “simular” um CTRL+V com Cypress, demonstrei o uso do .invoke('val'), para definir o valor de um campo de texto, para quando precisamos digitar um texto longo e não queremos perder tempo.
+
+            Dois últimos usos do .invoke() que eu quero que você conheça são:
+
+            Com o comando .invoke('show'), você pode forçar a exibição de um elemento HTML que esteja escondido, com um estilo display: none;, por exemplo.
+
+            E com o comando .invoke('hide'), você pode esconder um elemento que está sendo exibido.
+
+            Crie um teste chamado exibe e esconde as mensagens de sucesso e erro usando o .invoke()
+        */
+        it('exibe e esconde as mensagens de sucesso e erro usando o .invoke', () => {
+            cy.get('.success')
+                .should('not.be.visible')
+                .invoke('show')
+                .should('be.visible')
+                .and('contain', 'Mensagem enviada com sucesso.')
+                .invoke('hide')
+                .should('not.be.visible')
+            cy.get('.error')
+                .should('not.be.visible')
+                .invoke('show')
+                .should('be.visible')
+                .and('contain', 'Valide os campos obrigatórios!')
+                .invoke('hide')
+                .should('not.be.visible')
+        })
+
+        /*
+            Um dos maiores "poderes" 🦸🏽‍♂️ do Cypress é a possibilidade de executar comandos à nível de rede.
+
+            Um destes comandos é o cy.request().
+
+            Com o comando cy.request(), você pode executar requisições HTTP à nível de rede, ganhando tempo no setup dos testes e focando no que interessa quando se trata de testar as coisas pela interface gráfica de usuário.
+
+            Se você quiser, você pode até mesmo usar o comando cy.request() para testar APIs REST.
+
+            VAMOS CRIAR UM TESTE QUE VAI FAZER UMA REQUISIÇÃO HTTP
+        */
+        it('faz uma requisição HTTP', function(){
+            cy.request('https://cac-tat.s3.eu-central-1.amazonaws.com/index.html') //Fazendo a requisição
+                .should((response)=> {  //Colocando a resposta dentro de um should
+                    //console.log(response)
+                    const { status, statusText, body } = response // desestruturando o objeto
+                    expect(status).to.equal(200) //Fazendo as verificações
+                    expect(statusText).to.equal('OK')
+                    expect(body).to.include('CAC TAT')
+                })
+        })
+
+        /*
+            DESAFIO
+            Nesse desafio vamos usar o  .invoke para dar um show, mas tambem podemos usar ele para mudar um texto da pagina na camada local.
+        */
+        it.only('Mostra gato e muda title', () =>{
+            cy.get('#cat')
+                .invoke('show')
+                .should('be.visible')
+            cy.get('#title')
+                .invoke('text', 'TESTE TITLE')
+                .should('have.text', 'TESTE TITLE')
+        })
 })
